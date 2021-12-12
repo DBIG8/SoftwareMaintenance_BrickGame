@@ -208,7 +208,7 @@ abstract public class Brick  {
         return  broken;
     }
 
-    public abstract Shape getBrick();
+    public abstract Shape getBrickFace();
 
 
 
