@@ -80,7 +80,7 @@ public class HighScore extends JComponent implements MouseListener, MouseMotionL
         highscoreFont = new Font("ZapfDingbats",Font.PLAIN,20);
     }
 
-   // public void setSCORE(Integer[] SCORE,Integer lastScore) {
+   public void setSCORE(Integer[] SCORE,Integer lastScore) {
         this.SCORE = SCORE;
         this.LASTSCORE = lastScore;
     }
