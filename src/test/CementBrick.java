@@ -43,7 +43,7 @@ public class CementBrick extends Brick {
 
 
     @Override
-    public Shape getBrick() {
+    public Shape getBrickFace() {
         return brickFace;
     }
 
