@@ -128,10 +128,11 @@ public class HomeMenu extends JComponent implements MouseListener, MouseMotionLi
     }
 
     private void drawContainer(Graphics2D g2d){
-        Color prev = g2d.getColor();
-
-        g2d.setColor(BG_COLOR);
         g2d.fill(menuFace);
+        Image picture = Toolkit.getDefaultToolkit().getImage("C:\\Users\\Lenovo\\IdeaProjects\\Brick Destroy (2)\\Brick Destroy\\src\\main\\resources\\brick_homemenu.png");
+        g2d.drawImage(picture, 0, 0, getWidth(), getHeight(), this);
+
+      
 
         Stroke tmp = g2d.getStroke();
 
