@@ -90,6 +90,7 @@ public class HomeMenu extends JComponent implements MouseListener, MouseMotionLi
         creditsFont = new Font("Monospaced",Font.PLAIN,10);
         buttonFont = new Font("Monospaced",Font.PLAIN,startButton.height-2);
 
+         private GameMusic gamemUsic = new GameMusic("C:\\Users\\Lenovo\\IdeaProjects\\Brick Destroy (2)\\Brick Destroy\\src\\main\\resources\\gameMusic.wav");
 
 
     }
