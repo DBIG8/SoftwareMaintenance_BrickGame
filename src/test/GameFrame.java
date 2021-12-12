@@ -126,7 +126,7 @@ public class GameFrame extends JFrame implements WindowFocusListener {
     /**
      * enableHighscore screen
      */
-    //public void enableHighScore(){
+    public void enableHighScore(){
         ReadFile();
         highscoreScore = new Integer[highScoreList.size()];
         highScoreList.toArray (highscoreScore);
@@ -190,7 +190,7 @@ public class GameFrame extends JFrame implements WindowFocusListener {
     /**
      * disable high score screen
      */
-   // public void disableHighScore(){
+    public void disableHighScore(){
 
         this.dispose();
         this.remove(highScore);
@@ -245,4 +245,4 @@ public class GameFrame extends JFrame implements WindowFocusListener {
             gameBoard.onLostFocus();
 
     }
-}
+}//
