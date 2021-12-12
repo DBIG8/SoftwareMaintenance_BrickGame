@@ -1,116 +1,127 @@
-/*
- *  Brick Destroy - A simple Arcade video game
- *   Copyright (C) 2017  Filippo Ranza
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-package test;
+package gameboard;
+
+import brick.Brick;
+import main.java.DebugConsole;
+import main.java.GameFrame;
+import player.Player;
+import player.PlayerController;
+import wall.Wall;
+import wall.WallController;
+import wall.WallModel;
+import ball.BallModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.FontRenderContext;
 
-
-
+/**
+ GameBoard class
+ */
 public class GameBoard extends JComponent implements KeyListener,MouseListener,MouseMotionListener {
 
-    private static final String CONTINUE = "Continue";
-    private static final String RESTART = "Restart";
-    private static final String EXIT = "Exit";
-    private static final String PAUSE = "Pause Menu";
-    private static final int TEXT_SIZE = 30;
-    private static final Color MENU_COLOR = new Color(0,255,0);
+    public Wall wall;
+    public WallModel wallModel;
+    public WallController wallController;
+    public PlayerController playerController;
+    private GameBoardModel gameBoardModel;
+    private BallModel ballModel;
+    private final GameBoardController gameBoardController;
+    public Rectangle continueButtonRect;
+    public Rectangle exitButtonRect;
+    public Rectangle restartButtonRect;
+    public Rectangle homeButtonRect;
+    public Rectangle backButtonRect;
+    public GameFrame owner;
 
-
-    private static final int DEF_WIDTH = 600;
-    private static final int DEF_HEIGHT = 450;
-
-    private static final Color BG_COLOR = Color.WHITE;
-
-    private Timer gameTimer;
-
-    private Wall wall;
-
-    private String message;
-
-    private boolean showPauseMenu;
-
-    private Font menuFont;
-
-    private Rectangle continueButtonRect;
-    private Rectangle exitButtonRect;
-    private Rectangle restartButtonRect;
+    private String message1;
+    private String message2;
+    private String message3;
     private int strLen;
 
-    private DebugConsole debugConsole;
+    public DebugConsole debugConsole;
 
+    public Timer gameTimer;
 
-    public GameBoard(JFrame owner){
+    /**
+     * shows the game screen which includes ball, brick and player
+     * @param owner JFram owner will enable game board screen show up
+     */
+    public GameBoard(GameFrame owner){
         super();
+        this.owner = owner;
+        wallController = new WallController();
+        gameBoardController = new GameBoardController();
+        gameBoardModel = new GameBoardModel();
+        wallModel = new WallModel();
+        ballModel = new BallModel();
+        playerController = new PlayerController();
 
-        strLen = 0;
-        showPauseMenu = false;
-
-
-
-        menuFont = new Font("Monospaced",Font.PLAIN,TEXT_SIZE);
-
+        gameBoardModel.setMenuFont ( new Font("Monospaced",Font.PLAIN,gameBoardModel.getTextSize()));
 
         this.initialize();
-        message = "";
-        wall = new Wall(new Rectangle(0,0,DEF_WIDTH,DEF_HEIGHT),30,3,6/2,new Point(300,430));
+        message1 = "";
+        message2 = "";
+        message3 = "";
+        wall = new Wall(new Rectangle(0,0, gameBoardModel.getDefWidth(), gameBoardModel.getDefHeight()),30,3,6/2,new Point(300,430));
 
-        debugConsole = new DebugConsole(owner,wall,this);
+        debugConsole = new DebugConsole(owner,wallController,this);
         //initialize the first level
-        wall.nextLevel();
+        wallController.nextLevel();
+        gameTimer = new Timer (10,e -> {
+            playerController.move();
+            wallController.move();
+            wallController.findImpacts();
+            message1 = String.format("Bricks: %d Balls: %d",wallModel.getBrickCount(),wallModel.getBallCount());
+            message2 = String.format("Player Score: %d",wallModel.getPlayerScore());
+            message3 = String.format("");
 
-        gameTimer = new Timer(10,e ->{
-            wall.move();
-            wall.findImpacts();
-            message = String.format("Bricks: %d Balls %d",wall.getBrickCount(),wall.getBallCount());
-            if(wall.isBallLost()){
-                if(wall.ballEnd()){
-                    wall.wallReset();
-                    message = "Game over";
+            if(wallModel.isBallLost()){
+                if(wallModel.ballEnd()){
+                    wallController.wallReset();
+                    message1 = "Game over";
+                    message2 = "Press ALT+SHIFT+F1";
+                    message3 = "to Restart or Go Home Menu";
+                    int totalScore = wallModel.getPlayerScore();
+                    wallModel.setPlayerScore(totalScore);
+                    owner.WriteFile(totalScore);
                 }
-                wall.ballReset();
+
+                wallController.ballReset();
                 gameTimer.stop();
             }
-            else if(wall.isDone()){
-                if(wall.hasLevel()){
-                    message = "Go to Next Level";
+            else if(wallModel.isDone()){
+                if(wallModel.hasLevel()){
+                    message1 = "Go to Next Level!";
+                    message2 = "";
+                    message3 = "";
                     gameTimer.stop();
-                    wall.ballReset();
-                    wall.wallReset();
-                    wall.nextLevel();
+                    wallController.ballReset();
+                    wallController.wallReset();
+                    wallController.nextLevel();
                 }
                 else{
-                    message = "ALL WALLS DESTROYED";
+                    wallController.ballReset();
+                    wallController.wallReset();
+                    wallController.resetLevels();
+                    message1 = "CONGRATULATIONS,";
+                    message2 = "ALL WALLS DESTROYED!";
+                    message3 = "";
+                    int totalScore = wallModel.getPlayerScore();
+                    owner.WriteFile(totalScore);
                     gameTimer.stop();
                 }
             }
-
             repaint();
         });
-
     }
 
-
-
+    /**
+     * initialize the game board
+     * notified when key and mouse motion occured
+     */
     private void initialize(){
-        this.setPreferredSize(new Dimension(DEF_WIDTH,DEF_HEIGHT));
+        this.setPreferredSize(new Dimension(gameBoardModel.getDefWidth(), gameBoardModel.getDefHeight()));
         this.setFocusable(true);
         this.requestFocusInWindow();
         this.addKeyListener(this);
@@ -118,64 +129,84 @@ public class GameBoard extends JComponent implements KeyListener,MouseListener,M
         this.addMouseMotionListener(this);
     }
 
-
+    /**
+     * paint the game board screen
+     * @param g graphics parameter
+     */
     public void paint(Graphics g){
-
         Graphics2D g2d = (Graphics2D) g;
 
         clear(g2d);
 
-        g2d.setColor(Color.BLUE);
-        g2d.drawString(message,250,225);
+        g2d.setColor(new Color(255,140,0));
+        g2d.drawString(message1,255,220);
+        g2d.drawString(message2,255,235);
 
-        drawBall(wall.ball,g2d);
+        drawBall(g2d);
 
-        for(Brick b : wall.bricks)
+        for(Brick b : wall.brick)
             if(!b.isBroken())
                 drawBrick(b,g2d);
 
         drawPlayer(wall.player,g2d);
 
-        if(showPauseMenu)
+        if(GameBoardModel.showPauseMenu)
             drawMenu(g2d);
 
         Toolkit.getDefaultToolkit().sync();
     }
 
+    /**
+     * clear the screen
+     * @param g2d graphics2d parameter
+     */
     private void clear(Graphics2D g2d){
         Color tmp = g2d.getColor();
-        g2d.setColor(BG_COLOR);
+        g2d.setColor(gameBoardModel.getBackgroundColour());
         g2d.fillRect(0,0,getWidth(),getHeight());
         g2d.setColor(tmp);
     }
 
+    /**
+     * draw the brick including shape, colour and type
+     * @param brick pass in the brick of the Brick class
+     * @param g2d graphics2d parameter
+     */
     private void drawBrick(Brick brick,Graphics2D g2d){
         Color tmp = g2d.getColor();
 
         g2d.setColor(brick.getInnerColor());
-        g2d.fill(brick.getBrick());
+        g2d.fill(brick.getBrickFace());
 
         g2d.setColor(brick.getBorderColor());
-        g2d.draw(brick.getBrick());
-
+        g2d.draw(brick.getBrickFace());
 
         g2d.setColor(tmp);
     }
 
-    private void drawBall(Ball ball,Graphics2D g2d){
+    /**
+     * draw the brick including shape and colour
+     * @param g2d graphics2d parameter
+     */
+    private void drawBall(Graphics2D g2d){
         Color tmp = g2d.getColor();
 
-        Shape s = ball.getBallFace();
+        Shape s = ballModel.getBallFace();
 
-        g2d.setColor(ball.getInnerColor());
+        g2d.setColor(ballModel.getInnerColor());
         g2d.fill(s);
 
-        g2d.setColor(ball.getBorderColor());
+        g2d.setColor(ballModel.getBorderColor());
         g2d.draw(s);
 
         g2d.setColor(tmp);
     }
 
+    /**
+     * draw the player shape and colour
+     * @param p passing in player of the Player class
+     * @param g2d graphics2d parameter
+     */
     private void drawPlayer(Player p,Graphics2D g2d){
         Color tmp = g2d.getColor();
 
@@ -189,11 +220,19 @@ public class GameBoard extends JComponent implements KeyListener,MouseListener,M
         g2d.setColor(tmp);
     }
 
+    /**
+     * draw pause menu screen
+     * @param g2d graphics2d parameter
+     */
     private void drawMenu(Graphics2D g2d){
         obscureGameBoard(g2d);
         drawPauseMenu(g2d);
     }
 
+    /**
+     * draw game screen
+     * @param g2d graphics2d parameter
+     */
     private void obscureGameBoard(Graphics2D g2d){
 
         Composite tmp = g2d.getComposite();
@@ -203,61 +242,70 @@ public class GameBoard extends JComponent implements KeyListener,MouseListener,M
         g2d.setComposite(ac);
 
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0,0,DEF_WIDTH,DEF_HEIGHT);
+        g2d.fillRect(0,0,gameBoardModel.getDefWidth(), gameBoardModel.getDefHeight());
 
         g2d.setComposite(tmp);
         g2d.setColor(tmpColor);
     }
 
+    /**
+     * draw the buttons like continue, reset and etc in the pause menu screen
+     * @param g2d graphics2d parameter
+     */
     private void drawPauseMenu(Graphics2D g2d){
         Font tmpFont = g2d.getFont();
         Color tmpColor = g2d.getColor();
 
-
-        g2d.setFont(menuFont);
-        g2d.setColor(MENU_COLOR);
+        g2d.setFont(gameBoardModel.getMenuFont());
+        g2d.setColor(gameBoardModel.getMenuColor());
 
         if(strLen == 0){
             FontRenderContext frc = g2d.getFontRenderContext();
-            strLen = menuFont.getStringBounds(PAUSE,frc).getBounds().width;
+            strLen = gameBoardModel.getMenuFont().getStringBounds(GameBoardModel.PAUSE,frc).getBounds().width;
         }
 
         int x = (this.getWidth() - strLen) / 2;
         int y = this.getHeight() / 10;
 
-        g2d.drawString(PAUSE,x,y);
+        g2d.drawString(GameBoardModel.PAUSE,x,y);
 
         x = this.getWidth() / 8;
         y = this.getHeight() / 4;
 
-
         if(continueButtonRect == null){
             FontRenderContext frc = g2d.getFontRenderContext();
-            continueButtonRect = menuFont.getStringBounds(CONTINUE,frc).getBounds();
+            continueButtonRect = gameBoardModel.getMenuFont().getStringBounds(GameBoardModel.CONTINUE,frc).getBounds();
             continueButtonRect.setLocation(x,y-continueButtonRect.height);
         }
 
-        g2d.drawString(CONTINUE,x,y);
+        g2d.drawString(GameBoardModel.CONTINUE,x,y);
 
-        y *= 2;
+        y += 60;
 
         if(restartButtonRect == null){
             restartButtonRect = (Rectangle) continueButtonRect.clone();
             restartButtonRect.setLocation(x,y-restartButtonRect.height);
         }
 
-        g2d.drawString(RESTART,x,y);
+        g2d.drawString(GameBoardModel.RESTART,x,y);
 
-        y *= 3.0/2;
+        y += 60;
+
+        if(homeButtonRect == null){
+            homeButtonRect = (Rectangle) continueButtonRect.clone();
+            homeButtonRect.setLocation(x,y-homeButtonRect.height);
+        }
+
+        g2d.drawString(GameBoardModel.HOME,x,y);
+
+        y += 60;
 
         if(exitButtonRect == null){
             exitButtonRect = (Rectangle) continueButtonRect.clone();
             exitButtonRect.setLocation(x,y-exitButtonRect.height);
         }
 
-        g2d.drawString(EXIT,x,y);
-
-
+        g2d.drawString(GameBoardModel.EXIT,x,y);
 
         g2d.setFont(tmpFont);
         g2d.setColor(tmpColor);
@@ -269,31 +317,7 @@ public class GameBoard extends JComponent implements KeyListener,MouseListener,M
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        switch(keyEvent.getKeyCode()){
-            case KeyEvent.VK_A:
-                wall.player.moveLeft();
-                break;
-            case KeyEvent.VK_D:
-                wall.player.movRight();
-                break;
-            case KeyEvent.VK_ESCAPE:
-                showPauseMenu = !showPauseMenu;
-                repaint();
-                gameTimer.stop();
-                break;
-            case KeyEvent.VK_SPACE:
-                if(!showPauseMenu)
-                    if(gameTimer.isRunning())
-                        gameTimer.stop();
-                    else
-                        gameTimer.start();
-                break;
-            case KeyEvent.VK_F1:
-                if(keyEvent.isAltDown() && keyEvent.isShiftDown())
-                    debugConsole.setVisible(true);
-            default:
-                wall.player.stop();
-        }
+        gameBoardController.controllerKeyPressed(keyEvent,this);
     }
 
     @Override
@@ -303,69 +327,44 @@ public class GameBoard extends JComponent implements KeyListener,MouseListener,M
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        Point p = mouseEvent.getPoint();
-        if(!showPauseMenu)
-            return;
-        if(continueButtonRect.contains(p)){
-            showPauseMenu = false;
-            repaint();
-        }
-        else if(restartButtonRect.contains(p)){
-            message = "Restarting Game...";
-            wall.ballReset();
-            wall.wallReset();
-            showPauseMenu = false;
-            repaint();
-        }
-        else if(exitButtonRect.contains(p)){
-            System.exit(0);
-        }
-
+        gameBoardController.controllerMouseClicked(mouseEvent,this,owner);
     }
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-
     }
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-
     }
 
     @Override
     public void mouseEntered(MouseEvent mouseEvent) {
-
     }
 
     @Override
     public void mouseExited(MouseEvent mouseEvent) {
-
     }
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-
     }
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
-        Point p = mouseEvent.getPoint();
-        if(exitButtonRect != null && showPauseMenu) {
-            if (exitButtonRect.contains(p) || continueButtonRect.contains(p) || restartButtonRect.contains(p))
-                this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            else
-                this.setCursor(Cursor.getDefaultCursor());
-        }
-        else{
-            this.setCursor(Cursor.getDefaultCursor());
-        }
+        gameBoardController.controllerMouseMoved(mouseEvent,this);
     }
 
+    /**
+     * focus lost msg is showed when focus is lost
+     * redraw the screen
+     */
     public void onLostFocus(){
         gameTimer.stop();
-        message = "Focus Lost";
+        message1 = "Focus Lost";
+        message2 = "";
         repaint();
     }
-
 }
+
+
