@@ -4,7 +4,7 @@ import brick.*;
 
 import java.awt.*;
 
-/**
+/*
  * Levels class
  */
 public class Levels {
