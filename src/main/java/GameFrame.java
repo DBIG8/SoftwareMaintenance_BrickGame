@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
 
-/**
+/*
  * GameFrame Class
  */
 public class GameFrame extends JFrame implements WindowFocusListener {
