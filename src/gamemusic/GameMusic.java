@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-/**
+/*
  * generate game music throughout the entire game
  */
 public class GameMusic {
