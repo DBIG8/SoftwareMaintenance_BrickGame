@@ -81,7 +81,7 @@ public class DebugPanel extends JPanel {
         return out;
     }
 
-    /**
+    /*
      * set the x-axis and y-axis speed of the ball
      * @param x x-axis speed of ball
      * @param y y-axis speed of ball
