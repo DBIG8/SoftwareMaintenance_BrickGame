@@ -155,7 +155,7 @@ public class WallController {
         WallModel.setBallLostFalse();
     }
 
-    /**
+    /*
      * reset the level.
      */
     public void resetLevels() {
