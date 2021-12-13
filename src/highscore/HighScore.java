@@ -11,7 +11,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 
 
-/**
+/*
  * HighScore class
  */
 public class HighScore extends JComponent implements MouseListener, MouseMotionListener{
