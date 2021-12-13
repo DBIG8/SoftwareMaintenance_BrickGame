@@ -11,7 +11,7 @@ import ball.BallModel;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-/**
+/*
  * Wall class
  */
 public class Wall {
