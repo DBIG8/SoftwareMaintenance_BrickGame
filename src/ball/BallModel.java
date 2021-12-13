@@ -15,7 +15,7 @@ public class BallModel {
     public static int speedX;
     public static int speedY;
 
-    /**
+    /*
      * get method for ball's border colour
      * @return return the ball's border colour
      */
