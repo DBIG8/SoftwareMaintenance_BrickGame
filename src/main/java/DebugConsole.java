@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-/**
+/*
  * DebugConsole class
  */
 public class DebugConsole extends JDialog implements WindowListener{
