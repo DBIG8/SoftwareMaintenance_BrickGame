@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 
-/**
+/*
  * Instruction Class
  */
 public class Instruction extends JComponent implements MouseListener, MouseMotionListener {
