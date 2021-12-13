@@ -7,7 +7,7 @@ public class HomeMenuController {
 
     HomeMenuModel homeMenuModel = new HomeMenuModel();
 
-    /**
+    /*
      * implements methods is MouseListener
      * Start button enable GameBoard
      * Instruction button enable Instruction
