@@ -59,7 +59,7 @@ public class WallModel {
         return ballCount == 0;
     }
 
-    /**
+    /*
      * check if the brick of the level is all cleared
      * @return return true if all the bricks are destroyed
      */
