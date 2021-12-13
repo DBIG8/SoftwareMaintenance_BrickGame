@@ -3,7 +3,7 @@ package ball;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-/**
+/*
  * Ball class
  */
 abstract public class Ball {
