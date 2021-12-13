@@ -2,7 +2,7 @@ package brick;
 
 import java.awt.*;
 
-/**
+/*
  * CLayBrick class
  */
 public class ClayBrick extends Brick {
