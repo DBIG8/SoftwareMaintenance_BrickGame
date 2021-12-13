@@ -13,7 +13,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 
 
-/**
+/*
  * HomeMenu class
  */
 public class HomeMenu extends JComponent implements MouseListener, MouseMotionListener {
