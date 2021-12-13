@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
-/**
+/*
  * Brick Class
  */
 abstract public class Brick  {
