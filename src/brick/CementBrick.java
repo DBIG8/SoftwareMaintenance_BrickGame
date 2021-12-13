@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 
-/**
+/*
  * CementBrick class
  */
 public class CementBrick extends Brick {
