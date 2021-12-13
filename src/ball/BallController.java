@@ -3,7 +3,7 @@ package ball;
 import java.awt.*;
 import java.awt.geom.RectangularShape;
 
-/**
+/*
  * BallController class
  */
 public class BallController {
