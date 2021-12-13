@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class PlayerController {
 
-    /**
+    /*
      * move ball and player bar
      * @param p point
      */
