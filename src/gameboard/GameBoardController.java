@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 
 public class GameBoardController {
 
-    /**
+    /*
      * implements actions of the specific keys are pressed like A, D, ESC, SPACE and ALT+SHIFT+F!
      * @param keyEvent indicate user's keyboard is pressed
      * @param gameBoard game board display
