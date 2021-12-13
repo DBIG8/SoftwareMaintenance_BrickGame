@@ -2,7 +2,7 @@ package player;
 
 import java.awt.*;
 
-/**
+/*
  * Player class
  */
 public class Player {
