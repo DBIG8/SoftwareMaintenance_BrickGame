@@ -32,7 +32,7 @@ public class GameBoardModel {
 
     private Font menuFont;
 
-    /**
+    /*
      * get the colour of the background
      * @return return the colour of the background
      */
